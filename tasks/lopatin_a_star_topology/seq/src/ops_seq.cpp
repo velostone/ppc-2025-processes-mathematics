@@ -1,10 +1,8 @@
 #include "lopatin_a_star_topology/seq/include/ops_seq.hpp"
 
-#include <numeric>
 #include <vector>
 
 #include "lopatin_a_star_topology/common/include/common.hpp"
-#include "util/include/util.hpp"
 
 namespace lopatin_a_star_topology {
 

@@ -2,10 +2,10 @@
 
 #include <mpi.h>
 
+#include <cstdint>
 #include <vector>
 
 #include "lopatin_a_star_topology/common/include/common.hpp"
-#include "util/include/util.hpp"
 
 namespace lopatin_a_star_topology {
 
@@ -39,7 +39,7 @@ bool LopatinAStarTopologyMPI::ValidationImpl() {
   if (proc_rank == src_rank) {
     const auto &input = std::get<3>(GetInput());
     return (src_rank >= 0) && (dst_rank >= 0) && (src_rank < proc_num) && (dst_rank < proc_num) &&
-           (msg_size == static_cast<int>(input.size())) && (input.empty() == false);
+           (static_cast<uint32_t>(msg_size) == static_cast<uint32_t>(input.size())) && !input.empty();
   }
 
   return true;
@@ -68,8 +68,9 @@ bool LopatinAStarTopologyMPI::RunImpl() {
       output = input;
     }
     return true;
+  }
 
-  } else if ((src_rank * dst_rank) == 0) {
+  if ((src_rank * dst_rank) == 0) {
     if (proc_rank == src_rank) {
       const auto &input = std::get<3>(GetInput());
       MPI_Send(input.data(), msg_size, MPI_DOUBLE, dst_rank, 0, MPI_COMM_WORLD);

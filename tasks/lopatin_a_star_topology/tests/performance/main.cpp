@@ -9,15 +9,14 @@
 
 #include "lopatin_a_star_topology/common/include/common.hpp"
 #include "lopatin_a_star_topology/mpi/include/ops_mpi.hpp"
-#include "lopatin_a_star_topology/seq/include/ops_seq.hpp"
 #include "util/include/perf_test_util.hpp"
 #include "util/include/util.hpp"
 
 namespace lopatin_a_star_topology {
 
 class LopatinAStarTopologyPerfTests : public ppc::util::BaseRunPerfTests<InType, OutType> {
-  InType input_data_{};
-  OutType output_chekup_data_{};
+  InType input_data_;
+  OutType output_chekup_data_;
 
   void SetUp() override {
     int mpi_init = 0;

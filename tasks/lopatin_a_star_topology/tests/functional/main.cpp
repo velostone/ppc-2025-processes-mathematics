@@ -2,17 +2,17 @@
 #include <mpi.h>
 
 #include <array>
+#include <cmath>
+#include <cstddef>
 #include <fstream>
 #include <ios>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <tuple>
-#include <vector>
 
 #include "lopatin_a_star_topology/common/include/common.hpp"
 #include "lopatin_a_star_topology/mpi/include/ops_mpi.hpp"
-#include "lopatin_a_star_topology/seq/include/ops_seq.hpp"
 #include "util/include/func_test_util.hpp"
 #include "util/include/util.hpp"
 
@@ -38,8 +38,8 @@ class LopatinAStarTopologyFuncTests : public ppc::util::BaseRunFuncTests<InType,
     MPI_Comm_size(MPI_COMM_WORLD, &proc_num);
     if (proc_num < 2 && params != "func_self_to_self") {
       GTEST_SKIP() << "Number of processes is less than 2";
-
-    } else if (proc_num < 4 && params == "func_leaf_to_leaf") {
+    }
+    if (proc_num < 4 && params == "func_leaf_to_leaf") {
       GTEST_SKIP() << "Number of processes is less than 4";
     }
 
@@ -119,8 +119,8 @@ class LopatinAStarTopologyFuncTests : public ppc::util::BaseRunFuncTests<InType,
   }
 
  private:
-  InType input_data_{};
-  OutType output_chekup_data_{};
+  InType input_data_;
+  OutType output_chekup_data_;
 };
 
 namespace {
