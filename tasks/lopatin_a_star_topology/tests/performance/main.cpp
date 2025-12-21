@@ -31,7 +31,7 @@ class LopatinAStarTopologyPerfTests : public ppc::util::BaseRunPerfTests<InType,
     if (proc_num < 4) {
       GTEST_SKIP() << "Number of processes is less than 4";
     }
-    
+
     int proc_rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
 
@@ -76,10 +76,11 @@ class LopatinAStarTopologyPerfTests : public ppc::util::BaseRunPerfTests<InType,
       int proc_rank = 0;
       MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
 
-      if (proc_rank == std::get<1>(input_data_))
+      if (proc_rank == std::get<1>(input_data_)) {
         return output_data == output_chekup_data_;
+      }
     }
-      return true;
+    return true;
   }
 
   InType GetTestInputData() final {
@@ -91,8 +92,8 @@ TEST_P(LopatinAStarTopologyPerfTests, RunPerfModes) {
   ExecuteTest(GetParam());
 }
 
-const auto kAllPerfTasks = ppc::util::MakeAllPerfTasks<InType, LopatinAStarTopologyMPI>(
-    PPC_SETTINGS_lopatin_a_star_topology);
+const auto kAllPerfTasks =
+    ppc::util::MakeAllPerfTasks<InType, LopatinAStarTopologyMPI>(PPC_SETTINGS_lopatin_a_star_topology);
 
 const auto kGtestValues = ppc::util::TupleToGTestValues(kAllPerfTasks);
 

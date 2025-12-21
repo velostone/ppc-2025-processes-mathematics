@@ -67,30 +67,31 @@ class LopatinAStarTopologyFuncTests : public ppc::util::BaseRunFuncTests<InType,
 
       if (count == 0) {
         iss >> rank;
-        std::get<0>(input_data_) = rank; // source_rank
+        std::get<0>(input_data_) = rank;  // source_rank
 
       } else if (count == 1) {
         iss >> rank;
-        std::get<1>(input_data_) = rank; // dest_rank
-        
+        std::get<1>(input_data_) = rank;  // dest_rank
+
       } else if (count == 2) {
         iss >> msg_size;
         std::get<2>(input_data_) = msg_size;
 
       } else if (proc_rank == std::get<0>(input_data_)) {
         while (iss >> value) {
-          std::get<3>(input_data_).push_back(value); // data
+          std::get<3>(input_data_).push_back(value);  // data
         }
         if (params == "func_self_to_self") {
           output_chekup_data_ = std::get<3>(input_data_);
-          
+
         } else {
           MPI_Send(std::get<3>(input_data_).data(), msg_size, MPI_DOUBLE, std::get<1>(input_data_), 0, MPI_COMM_WORLD);
         }
 
       } else if (proc_rank == std::get<1>(input_data_) && params != "func_self_to_self") {
         output_chekup_data_.resize(msg_size);
-        MPI_Recv(output_chekup_data_.data(), msg_size, MPI_DOUBLE, std::get<0>(input_data_), 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(output_chekup_data_.data(), msg_size, MPI_DOUBLE, std::get<0>(input_data_), 0, MPI_COMM_WORLD,
+                 MPI_STATUS_IGNORE);
       }
       ++count;
     }
@@ -106,10 +107,11 @@ class LopatinAStarTopologyFuncTests : public ppc::util::BaseRunFuncTests<InType,
       int proc_rank = 0;
       MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
 
-      if (proc_rank == std::get<1>(input_data_))
+      if (proc_rank == std::get<1>(input_data_)) {
         return output_data == output_chekup_data_;
+      }
     }
-      return true;
+    return true;
   }
 
   InType GetTestInputData() final {

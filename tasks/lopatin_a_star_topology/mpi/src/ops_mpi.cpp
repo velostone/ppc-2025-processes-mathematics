@@ -38,7 +38,8 @@ bool LopatinAStarTopologyMPI::ValidationImpl() {
   int msg_size = std::get<2>(GetInput());
   if (proc_rank == src_rank) {
     const auto &input = std::get<3>(GetInput());
-    return (src_rank >= 0) && (dst_rank >= 0) && (src_rank < proc_num) && (dst_rank < proc_num) && (msg_size == static_cast<int>(input.size())) && (input.empty() == false);
+    return (src_rank >= 0) && (dst_rank >= 0) && (src_rank < proc_num) && (dst_rank < proc_num) &&
+           (msg_size == static_cast<int>(input.size())) && (input.empty() == false);
   }
 
   return true;
@@ -69,36 +70,32 @@ bool LopatinAStarTopologyMPI::RunImpl() {
     return true;
 
   } else if ((src_rank * dst_rank) == 0) {
-      if (proc_rank == src_rank) {
-        const auto &input = std::get<3>(GetInput());
-        MPI_Send(input.data(), msg_size, MPI_DOUBLE, dst_rank, 0, MPI_COMM_WORLD);
+    if (proc_rank == src_rank) {
+      const auto &input = std::get<3>(GetInput());
+      MPI_Send(input.data(), msg_size, MPI_DOUBLE, dst_rank, 0, MPI_COMM_WORLD);
 
-      } else if (proc_rank == dst_rank) {
-
-        output.resize(msg_size);
-        MPI_Status status{};
-        MPI_Recv(output.data(), msg_size, MPI_DOUBLE, src_rank, 0, MPI_COMM_WORLD, &status);
-      }
-    } else {
-      if (proc_rank == src_rank) {
-
-        const auto &input = std::get<3>(GetInput());
-        MPI_Send(input.data(), msg_size, MPI_DOUBLE, center_rank, 0, MPI_COMM_WORLD);
-
-      } else if (proc_rank == center_rank) {
-
-        std::vector<double> buf(msg_size);
-        MPI_Status status{};
-        MPI_Recv(buf.data(), msg_size, MPI_DOUBLE, src_rank, 0, MPI_COMM_WORLD, &status);
-        MPI_Send(buf.data(), msg_size, MPI_DOUBLE, dst_rank, 0, MPI_COMM_WORLD);
-
-      } else if (proc_rank == dst_rank) {
-
-        output.resize(msg_size);
-        MPI_Status status{};
-        MPI_Recv(output.data(), msg_size, MPI_DOUBLE, center_rank, 0, MPI_COMM_WORLD, &status);
-      }
+    } else if (proc_rank == dst_rank) {
+      output.resize(msg_size);
+      MPI_Status status{};
+      MPI_Recv(output.data(), msg_size, MPI_DOUBLE, src_rank, 0, MPI_COMM_WORLD, &status);
     }
+  } else {
+    if (proc_rank == src_rank) {
+      const auto &input = std::get<3>(GetInput());
+      MPI_Send(input.data(), msg_size, MPI_DOUBLE, center_rank, 0, MPI_COMM_WORLD);
+
+    } else if (proc_rank == center_rank) {
+      std::vector<double> buf(msg_size);
+      MPI_Status status{};
+      MPI_Recv(buf.data(), msg_size, MPI_DOUBLE, src_rank, 0, MPI_COMM_WORLD, &status);
+      MPI_Send(buf.data(), msg_size, MPI_DOUBLE, dst_rank, 0, MPI_COMM_WORLD);
+
+    } else if (proc_rank == dst_rank) {
+      output.resize(msg_size);
+      MPI_Status status{};
+      MPI_Recv(output.data(), msg_size, MPI_DOUBLE, center_rank, 0, MPI_COMM_WORLD, &status);
+    }
+  }
 
   MPI_Barrier(MPI_COMM_WORLD);
   return true;
