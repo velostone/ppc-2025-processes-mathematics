@@ -3,6 +3,7 @@
 #include <mpi.h>
 
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 #include "lopatin_a_star_topology/common/include/common.hpp"
@@ -39,7 +40,7 @@ bool LopatinAStarTopologyMPI::ValidationImpl() {
   if (proc_rank == src_rank) {
     const auto &input = std::get<3>(GetInput());
     return (src_rank >= 0) && (dst_rank >= 0) && (src_rank < proc_num) && (dst_rank < proc_num) &&
-           (static_cast<uint32_t>(msg_size) == static_cast<uint32_t>(input.size())) && !input.empty();
+           std::cmp_equal(msg_size, input.size()) && !input.empty();
   }
 
   return true;
